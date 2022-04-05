@@ -1,5 +1,10 @@
 import torch
+from transformers import AutoTokenizer, AutoModelForMaskedLM
 import numpy as np
+import json
+from datetime import datetime
+import pandas as pd
+
 
 def mean_pooling(token_embeddings, attention_mask):
     """
@@ -17,6 +22,7 @@ def mean_pooling(token_embeddings, attention_mask):
     sum_mask = torch.clamp(input_mask_expanded.sum(1), min=1e-9)
     return sum_embeddings / sum_mask
 
+
 def embed(query, tokenizer, model):
     """
     Embed `query` using `model` and return it.
@@ -31,6 +37,7 @@ def embed(query, tokenizer, model):
     query_embedding = mean_pooling(query_embedding, token['attention_mask'])
     return query_embedding
 
+
 def cosine_similarity(v, M):
     """
     L2 similarity between a vector (single query embedding) and a matrix (of embeddings).
@@ -43,6 +50,7 @@ def cosine_similarity(v, M):
     dM = M.norm(p=2, dim=1)
     return (M.matmul(v.T)).squeeze().div(dM * dv)
 
+
 def L2_similarity(v, M):
     """
     Calculate the L2 / Euclidean distance between all rows in M and v.
@@ -53,6 +61,7 @@ def L2_similarity(v, M):
     :return: torch.tensor of size (n_documents,)
     """
     return -torch.cdist(M, v).squeeze()
+
 
 def return_ranked(query, tokenizer, model, M):
     """
@@ -71,6 +80,7 @@ def return_ranked(query, tokenizer, model, M):
     sims = sims[rankings].tolist()
     ranks = rankings.tolist()
     return list(zip(ranks, sims))
+
 
 def return_ranked_by_sentence(query, tokenizer, model, indices, M):
     """
@@ -94,3 +104,55 @@ def return_ranked_by_sentence(query, tokenizer, model, indices, M):
     ranks = final_doc_rankings.tolist()
     matching_sims = matching_sims.tolist()
     return list(zip(ranks, matching_sims))
+
+
+# Loads the vector embeddings
+def load_embeddings(embeddings_path):
+    m = torch.load(embeddings_path)
+    return m
+
+
+# Loads the tokenizer and masking model
+def load_model(path_or_name):
+    tokenizer = AutoTokenizer.from_pretrained(path_or_name)
+    model = AutoModelForMaskedLM.from_pretrained(path_or_name)
+    return tokenizer, model
+
+
+def run_tool(query, min_words):
+    # Loads json file containing UKRI grants
+    f = open("data\\metadata.json")
+    metadata = json.load(f)
+
+    # Loads the vector embeddings
+    embeddings = load_embeddings("data\\distilbert3tensor.pt")
+
+    # Loads the tokenizer and masking model
+    tokenizer, model = load_model("model\\distilbert3")
+
+    # Fetch results
+    results = return_ranked(query, tokenizer, model, embeddings)
+
+    # Subset to min words
+    results = [r for r in results if len(metadata[str(r[0])]['abstract'].split()) > min_words]
+
+    # Return data as json file
+    meta = [{"reference": metadata[str(i)]["project_reference"],
+             "title": metadata[str(i)]["project_title"],
+             "abstract": metadata[str(i)]["abstract"],
+             "value": int(metadata[str(i)]["value"]),
+             "n_words": len(metadata[str(i)]["abstract"].split()),
+             "start_year": int(datetime.strptime(metadata[str(i)]['start_date'],
+                                                 "%d/%m/%Y").year),
+             "end_year": int(datetime.strptime(metadata[str(i)]['end_date'],
+                                               "%d/%m/%Y").year),
+             "distance": dist}
+            for i, dist in results[:-1]]
+
+    # Turn json file into dataframe
+    df = pd.DataFrame(meta)
+
+    # Reference column is a list of grants. This will separate those grants out
+    df = df.explode('reference')
+
+    return df
