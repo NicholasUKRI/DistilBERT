@@ -1,4 +1,4 @@
-from search import *
+from search import run_tool
 
 # Any grants with abstracts less than min_words will be removed. Default = 75
 min_words = 75
