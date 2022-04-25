@@ -6,7 +6,7 @@
 
 This tool uses a lightweight variant of Google’s influential BERT Neural Network NLP model (DistilBERT) to classify our portfolio by undefined topics. The model has been trained on UKRI GTR data (2012-2022).
 
-&nbsp;
+/n
 ### Dependencies
 
 The 'data' folder referenced in main.py is here:
