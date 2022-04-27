@@ -9,7 +9,7 @@ This tool uses a lightweight variant of Google’s influential BERT Neural Netw
 
 ### Dependencies
 
-The following folders need to be extracted and placed in the root location of the folder i.e. in the same folder as the main.py and search.py scripts. They contain the trained DistilBERT model and trained embeddings:
+The following folders need to be extracted and placed in the root location of the folder i.e. in the same folder as the main.py and search.py scripts. They contain the trained DistilBERT model, trained embeddings and the metadata for the search:
 
 - [Data Folder](https://ukri.sharepoint.com/:f:/r/sites/PolicyAnalysis/Shared%20Documents/Member%20Folders/Nicholas%20Hooper%20-%20Analyst/thematic%20search%20-%20tools/data?csf=1&web=1&e=8EgQ4e)
 - [Model Folder](https://ukri.sharepoint.com/:f:/r/sites/PolicyAnalysis/Shared%20Documents/Member%20Folders/Nicholas%20Hooper%20-%20Analyst/thematic%20search%20-%20tools/data?csf=1&web=1&e=8EgQ4e)
