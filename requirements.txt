@@ -1,11 +1,18 @@
+transformers==4.16.2
+XlsxWriter==3.0.3
+torchvision==0.11.3
+#google-api-python-client==2.46.0
+#google-auth-oauthlib==0.4.6
+statsmodels==0.13.2
+nltk==3.7
+scikit-learn==1.0.2
+modAL==0.4.1
+datasets==1.18.3
 pandas~=1.3.5
 numpy~=1.21.5
-streamlit~=1.8.1
-altair~=4.2.0
-torch~=1.9.0+cu111
-PyDrive2~=1.10.1
-google~=3.0.0
-
+pydrive2==1.10.1
+# line for installing torch/torchvision if using CUDA to build model - Laptop GTX 3080. This will differ depending on your GPU.
+#torch==1.9.0+cu111 torchvision==0.10.0+cu111 -f https://download.pytorch.org/whl/torch_stable.html
 
 
 
