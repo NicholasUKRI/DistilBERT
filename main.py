@@ -7,10 +7,13 @@ from search import *
 import streamlit as st
 from io import BytesIO
 # from pyxlsb import open_workbook as open_xlsb
+# from datetime import datetime
+import matplotlib.pyplot as plt
 import pandas as pd
 import math
 from datetime import datetime
 import altair as alt
+#import googleapiclient.
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 import json
@@ -64,13 +67,52 @@ from Google import Create_Service
 #
 # download()
 
+from pydrive2.auth import GoogleAuth
+from pydrive2.drive import GoogleDrive
+gauth = GoogleAuth()
+gauth.LocalWebserverAuth()
+drive = GoogleDrive(gauth)
 
-CLIENT_SECRET_FILE = 'credentials.json'
-API_NAME = 'drive'
-API_VERSION = 'v3'
-SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+# # get metadata
+# metadata_id = '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'
+#
+# metadata_file = drive.CreateFile({'id': metadata_id})
+# metadata = file_.GetContentString('metadata.json')
 
-service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+@st.cache
+def get_metadata():
+    metadata_file = drive.CreateFile({'id': '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'})
+    metadatastring = metadata_file.GetContentString('metadata.json')
+# turn bytes into JSON
+    metadata = json.loads(metadatastring)
+    return metadata
+
+
+
+#
+# CLIENT_SECRET_FILE = 'credentials.json'
+# API_NAME = 'drive'
+# API_VERSION = 'v3'
+# SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
+#
+# service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
+#
+# @st.cache
+# def get_metadata():
+#     file_id = '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'
+#     request = service.files().get_media(fileId=file_id)
+#     fh = io.BytesIO()
+#     downloader = MediaIoBaseDownload(fd=fh, request = request)
+#     done = False
+#     while not done:
+#         status, done = downloader.next_chunk()
+#         print("Download %d%%." % int(status.progress() * 100))
+#
+#     metadataGoogle = fh.getvalue()
+# # turn bytes into JSON
+#     metadata = json.loads(metadataGoogle)
+#     return metadata
+
 
 #
 # #google key
@@ -124,23 +166,30 @@ def to_excel(df, query, min_words, min_threshold):
     return processed_data
 
 
+# # Loads the vector embeddings
+# @st.cache
+# def load_embeddings():
+#     file_id = '1jDGcd3-gCBZyKxDz35hRJ4Z8CP3vPYWJ'
+#     requests = service.files().get_media(fileId=file_id)
+#     fg = io.BytesIO()
+#     downloader = MediaIoBaseDownload(fd=fg, request=requests)
+#     done = False
+#     while not done:
+#         status, done = downloader.next_chunk()
+#         print("Download %d%%." % int(status.progress() * 100))
+#
+#     distilbert3ten = fg.getvalue()
+#
+#     m = torch.load(io.BytesIO(distilbert3ten))
+#     return m
+
 # Loads the vector embeddings
 @st.cache
 def load_embeddings():
-    file_id = '1jDGcd3-gCBZyKxDz35hRJ4Z8CP3vPYWJ'
-    requests = service.files().get_media(fileId=file_id)
-    fg = io.BytesIO()
-    downloader = MediaIoBaseDownload(fd=fg, request=requests)
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-        print("Download %d%%." % int(status.progress() * 100))
-
-    distilbert3ten = fg.getvalue()
-
-    m = torch.load(io.BytesIO(distilbert3ten))
+    embedding_file = drive.CreateFile({'id': '1jDGcd3-gCBZyKxDz35hRJ4Z8CP3vPYWJ'})
+    embedding_file.GetContentFile('distilbert3tensor.pt')
+    m = torch.load('distilbert3tensor.pt')
     return m
-
 
 # Loads the tokenizer and masking model
 @st.cache(allow_output_mutation=True)
@@ -154,23 +203,6 @@ def load_model():
 def load_indices():
     idx = torch.load("./data/chunkindices.pt")
     return idx
-
-@st.cache
-def get_metadata():
-    file_id = '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'
-    request = service.files().get_media(fileId=file_id)
-    fh = io.BytesIO()
-    downloader = MediaIoBaseDownload(fd=fh, request = request)
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-        print("Download %d%%." % int(status.progress() * 100))
-
-    metadataGoogle = fh.getvalue()
-# turn bytes into JSON
-    metadata = json.loads(metadataGoogle)
-    return metadata
-
 
 metadata = get_metadata()
 embeddings = load_embeddings()
