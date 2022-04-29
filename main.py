@@ -1,82 +1,21 @@
-# pip install --upgrade google-api-python-client google-auth-httplib2 google-auth-oauthlib
 import base64
-# import xlsxwriter
 import io
 import numpy as np
 from search import *
 import streamlit as st
 from io import BytesIO
-# from pyxlsb import open_workbook as open_xlsb
-# from datetime import datetime
 import pandas as pd
 import math
 from datetime import datetime
 import altair as alt
-#import googleapiclient.
-#from googleapiclient.discovery import build
-#from googleapiclient.http import MediaIoBaseDownload
 import json
 import torch
-#from Google import Create_Service
-
-# import pickle
-# import os
-# from googleapiclient.discovery import build
-# from google_auth_oauthlib.flow import InstalledAppFlow
-# from google.auth.transport.requests import Request
-# from tabulate import tabulate
-#
-# # If modifying these scopes, delete the file token.pickle.
-# SCOPES = ['https://www.googleapis.com/auth/drive.metadata.readonly']
-#
-# def get_gdrive_service():
-#     creds = None
-#     # The file token.pickle stores the user's access and refresh tokens, and is
-#     # created automatically when the authorization flow completes for the first
-#     # time.
-#     if os.path.exists('token.pickle'):
-#         with open('token.pickle', 'rb') as token:
-#             creds = pickle.load(token)
-#     # If there are no (valid) credentials available, let the user log in.
-#     if not creds or not creds.valid:
-#         if creds and creds.expired and creds.refresh_token:
-#             creds.refresh(Request())
-#         else:
-#             flow = InstalledAppFlow.from_client_secrets_file(
-#                 'credentials.json', SCOPES)
-#             creds = flow.run_local_server(port=0)
-#         # Save the credentials for the next run
-#         with open('token.pickle', 'wb') as token:
-#             pickle.dump(creds, token)
-#     # return Google Drive API service
-#     return build('drive', 'v3', credentials=creds)
-#
-# def download():
-#     service = get_gdrive_service()
-#     # the name of the file you want to download from Google Drive
-#     filename = 'metadata.json'
-#     # search for the file by name
-#     search_result = search(service, query=f"name='{filename}'")
-#     # get the GDrive ID of the file
-#     file_id = search_result[0][0]
-#     # make it shareable
-#     service.permissions().create(body={"role": "reader", "type": "anyone"}, fileId=file_id).execute()
-#     # download file
-#     download_file_from_google_drive(file_id, filename)
-#
-# download()
-
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
+
 gauth = GoogleAuth()
 gauth.LocalWebserverAuth()
 drive = GoogleDrive(gauth)
-
-# # get metadata
-# metadata_id = '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'
-#
-# metadata_file = drive.CreateFile({'id': metadata_id})
-# metadata = file_.GetContentString('metadata.json')
 
 @st.cache
 def get_metadata():
@@ -85,68 +24,6 @@ def get_metadata():
 # turn bytes into JSON
     metadata = json.loads(metadatastring)
     return metadata
-
-
-
-#
-# CLIENT_SECRET_FILE = 'credentials.json'
-# API_NAME = 'drive'
-# API_VERSION = 'v3'
-# SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
-#
-# service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-#
-# @st.cache
-# def get_metadata():
-#     file_id = '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'
-#     request = service.files().get_media(fileId=file_id)
-#     fh = io.BytesIO()
-#     downloader = MediaIoBaseDownload(fd=fh, request = request)
-#     done = False
-#     while not done:
-#         status, done = downloader.next_chunk()
-#         print("Download %d%%." % int(status.progress() * 100))
-#
-#     metadataGoogle = fh.getvalue()
-# # turn bytes into JSON
-#     metadata = json.loads(metadataGoogle)
-#     return metadata
-
-
-#
-# #google key
-# API_key = "AIzaSyDhEQ4z_j8AkBZJaS5elxyAMUzyU1ru2LE"
-# #creating an instance of the class
-# drive_service = build('drive', 'v2', developerKey = API_key)
-#
-# file_id = '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'
-# request = drive_service.files().get_media(fileId=file_id)
-# fh = io.BytesIO()
-# downloader = MediaIoBaseDownload(fh, request)
-# done = False
-# while done is False:
-#         status, done = downloader.next_chunk()
-#         print ("Download %d%%." % int(status.progress() * 100))
-# metadataGoogle = fh.getvalue()
-#
-# # turn bytes into JSON
-# metadata = json.loads(metadataGoogle)
-#
-# file_id2 = '1jDGcd3-gCBZyKxDz35hRJ4Z8CP3vPYWJ'
-# request = drive_service.files().get_media(fileId=file_id2)
-# gh = io.BytesIO()
-#
-# downloader = MediaIoBaseDownload(gh, request)
-# done = False
-# while done is False:
-#     status, done = downloader.next_chunk()
-#     print("Download %d%%." % int(status.progress() * 100))
-# distilbert3ten = gh.getvalue()
-#
-#
-
-
-st.set_page_config(page_title="UK Science R&D Search")
 
 # converts dataframe to excel for export
 def to_excel(df, query, min_words, min_threshold):
@@ -164,25 +41,6 @@ def to_excel(df, query, min_words, min_threshold):
     processed_data = output.getvalue()
     return processed_data
 
-
-# # Loads the vector embeddings
-# @st.cache
-# def load_embeddings():
-#     file_id = '1jDGcd3-gCBZyKxDz35hRJ4Z8CP3vPYWJ'
-#     requests = service.files().get_media(fileId=file_id)
-#     fg = io.BytesIO()
-#     downloader = MediaIoBaseDownload(fd=fg, request=requests)
-#     done = False
-#     while not done:
-#         status, done = downloader.next_chunk()
-#         print("Download %d%%." % int(status.progress() * 100))
-#
-#     distilbert3ten = fg.getvalue()
-#
-#     m = torch.load(io.BytesIO(distilbert3ten))
-#     return m
-
-# Loads the vector embeddings
 @st.cache
 def load_embeddings():
     embedding_file = drive.CreateFile({'id': '1jDGcd3-gCBZyKxDz35hRJ4Z8CP3vPYWJ'})
@@ -198,29 +56,21 @@ def load_model():
     return tokenizer, model
 
 
-@st.cache
-def load_indices():
-    idx = torch.load("./data/chunkindices.pt")
-    return idx
-
 metadata = get_metadata()
 embeddings = load_embeddings()
 tokenizer, model = load_model()
 
 
-def main():
-    # with open("data/metadata.json", "r") as f:
-    #     metadata = json.load(f)
+st.set_page_config(page_title="UK Science R&D Search")
 
+
+def main():
     st.write('V1.0 April 20, 2022')
     st.title("What 🔬 science do we fund?")
     st.write('This search engine will sort the UKRI corpus from most relevant to least to your query...')
 
     # define query
     query = st.text_area("Topic (Use at least 5-10 words to describe your topic)", "")
-
-    # embeddings = load_embeddings()
-    # tokenizer, model = load_model()
 
     if query:
         # parameters
@@ -286,10 +136,6 @@ def main():
                         "labelColor": text,
                         "titleColor": text
                     },
-                    # "legend": {
-                    #     "labelColor": text,
-                    #     "titleColor": text
-                    # },
                     "range": {
                         "category": line_colors
                     },
@@ -356,9 +202,6 @@ def main():
             return currency_string
 
         df["Value"] = df["Value"].apply(lambda x: format_currency(x))
-
-        # Reference column is a list of grants. This will separate those grants out
-        # df = df.explode('reference')
 
         #CSS to inject contained in a string
         hide_table_row_index = """
