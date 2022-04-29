@@ -181,7 +181,9 @@ def load_indices():
     idx = torch.load("./data/chunkindices.pt")
     return idx
 
+@st.cache
 metadata = get_metadata()
+
 embeddings = load_embeddings()
 tokenizer, model = load_model()
 
