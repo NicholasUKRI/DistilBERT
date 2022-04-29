@@ -7,8 +7,6 @@ from search import *
 import streamlit as st
 from io import BytesIO
 # from pyxlsb import open_workbook as open_xlsb
-# from datetime import datetime
-#import matplotlib.pyplot as plt
 import pandas as pd
 import math
 from datetime import datetime
@@ -73,30 +71,6 @@ API_VERSION = 'v3'
 SCOPES = ['https://www.googleapis.com/auth/drive.readonly']
 
 service = Create_Service(CLIENT_SECRET_FILE, API_NAME, API_VERSION, SCOPES)
-
-@st.cache
-def get_metadata():
-    file_id = '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'
-    request = service.files().get_media(fileId=file_id)
-    fh = io.BytesIO()
-    downloader = MediaIoBaseDownload(fd=fh, request = request)
-    done = False
-    while not done:
-        status, done = downloader.next_chunk()
-        print("Download %d%%." % int(status.progress() * 100))
-
-    metadataGoogle = fh.getvalue()
-# turn bytes into JSON
-    metadata = json.loads(metadataGoogle)
-    return metadata
-
-
-
-
-
-
-
-
 
 #
 # #google key
@@ -180,6 +154,22 @@ def load_model():
 def load_indices():
     idx = torch.load("./data/chunkindices.pt")
     return idx
+
+@st.cache
+def get_metadata():
+    file_id = '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'
+    request = service.files().get_media(fileId=file_id)
+    fh = io.BytesIO()
+    downloader = MediaIoBaseDownload(fd=fh, request = request)
+    done = False
+    while not done:
+        status, done = downloader.next_chunk()
+        print("Download %d%%." % int(status.progress() * 100))
+
+    metadataGoogle = fh.getvalue()
+# turn bytes into JSON
+    metadata = json.loads(metadataGoogle)
+    return metadata
 
 
 metadata = get_metadata()
