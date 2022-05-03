@@ -10,37 +10,9 @@ from datetime import datetime
 import altair as alt
 import json
 import torch
-# from pydrive2.auth import GoogleAuth
-# from pydrive2.drive import GoogleDrive
 from transformers import AutoTokenizer, AutoModelForMaskedLM
 
-# # Authenticate App once
-# gauth = GoogleAuth()
-#
-# # Try to load saved client credentials
-# gauth.LoadCredentialsFile("mycreds.txt")
-#
-# if gauth.credentials is None:
-#     # Authenticate if they're not there
-#
-#     # This is what solved the issues:
-#     gauth.GetFlow()
-#     gauth.flow.params.update({'access_type': 'offline'})
-#     gauth.flow.params.update({'approval_prompt': 'force'})
-#
-#     gauth.LocalWebserverAuth()
-#
-# elif gauth.access_token_expired:
-#     # Refresh them if expired
-#     gauth.Refresh()
-# else:
-#     # Initialize the saved creds
-#     gauth.Authorize()
-#
-# # Save the current credentials to a file
-# gauth.SaveCredentialsFile("mycreds.txt")
-#
-# drive = GoogleDrive(gauth)
+st.set_page_config(page_title="UK Science R&D Search")
 
 @st.cache
 def get_metadata():
@@ -48,14 +20,6 @@ def get_metadata():
     f = open("data\\metadata.json")
     metadata = json.load(f)
     return metadata
-
-# @st.cache
-# def get_metadata():
-#     metadata_file = drive.CreateFile({'id': '113eOPDaBkcUv9jMMZjp1HRlsdGA-5Jmr'})
-#     metadatastring = metadata_file.GetContentString('metadata.json')
-# # turn bytes into JSON
-#     metadata = json.loads(metadatastring)
-#     return metadata
 
 # converts dataframe to excel for export
 def to_excel(df, query, min_words, min_threshold):
@@ -73,13 +37,6 @@ def to_excel(df, query, min_words, min_threshold):
     processed_data = output.getvalue()
     return processed_data
 
-# @st.cache
-# def load_embeddings():
-#     embedding_file = drive.CreateFile({'id': '1jDGcd3-gCBZyKxDz35hRJ4Z8CP3vPYWJ'})
-#     embedding_file.GetContentFile('distilbert3tensor.pt')
-#     m = torch.load('distilbert3tensor.pt')
-#     return m
-
 @st.cache
 def load_embeddings():
     m = torch.load('data\\distilbert3tensor.pt')
@@ -94,13 +51,10 @@ def load_model():
     return tokenizer, model
 
 
-metadata = get_metadata()
+metadataCache = get_metadata()
+metadata = metadataCache.copy()
 embeddings = load_embeddings()
 tokenizer, model = load_model()
-
-
-st.set_page_config(page_title="UK Science R&D Search")
-
 
 def main():
     st.write('V1.0 April 20, 2022')
