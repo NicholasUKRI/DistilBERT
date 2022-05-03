@@ -11,6 +11,7 @@ import altair as alt
 import json
 import torch
 from transformers import AutoTokenizer, AutoModelForMaskedLM
+import xlsxwriter
 
 st.set_page_config(page_title="UK Science R&D Search")
 
