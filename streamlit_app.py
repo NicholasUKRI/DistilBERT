@@ -39,7 +39,7 @@ def to_excel(df, query, min_words, min_threshold):
 
 @st.cache
 def load_embeddings():
-    m = torch.load('Data\\distilbert3tensor.pt')
+    m = torch.load('Data/distilbert3tensor.pt')
     return m
 
 
