@@ -12,6 +12,7 @@ import json
 import torch
 from pydrive2.auth import GoogleAuth
 from pydrive2.drive import GoogleDrive
+from transformers import AutoTokenizer, AutoModelForMaskedLM
 
 # Authenticate App once
 gauth = GoogleAuth()
