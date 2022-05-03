@@ -249,7 +249,7 @@ def main():
         st.table(df)
 
 
-if __name__ == "__main__":
-    main()
+# if __name__ == "__main__":
+#     main()
 
 
