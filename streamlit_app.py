@@ -17,8 +17,8 @@ st.set_page_config(page_title="UK Science R&D Search")
 @st.cache
 def get_metadata():
     # Loads json file containing UKRI grants
-    f = open("Data\\metadata.json")
-    metadata = json.load(f)
+    f = open("Data/metadata.json")
+        metadata = json.load(f)
     return metadata
 
 # converts dataframe to excel for export
