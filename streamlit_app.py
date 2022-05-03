@@ -17,7 +17,7 @@ st.set_page_config(page_title="UK Science R&D Search")
 @st.cache
 def get_metadata():
     # Loads json file containing UKRI grants
-    f = open("data\\metadata.json")
+    f = open("Data\\metadata.json")
     metadata = json.load(f)
     return metadata
 
@@ -39,7 +39,7 @@ def to_excel(df, query, min_words, min_threshold):
 
 @st.cache
 def load_embeddings():
-    m = torch.load('data\\distilbert3tensor.pt')
+    m = torch.load('Data\\distilbert3tensor.pt')
     return m
 
 
